@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+    <header>
+        <h1>Dashboard de {{ session['usuario_nome'] }}</h1>
+        
+        <a href="{{ url_for('logout') }}">Sair da Conta</a>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <main>
+         <h3>Adicionar Nova Transação</h3>
+        <form action="{{ url_for('adicionar_transacao') }}" method="POST">
+            
+            <label for="descricao">Descrição:</label><br>
+            <input type="text" name="descricao" required><br>
+            
+            <label for="valor">Valor (R$):</label><br>
+            <input type="number" name="valor" step="0.01" required>   <br> 
+
+            <label for="data">Data:</label><br>
+            <input type="date" name="data" required>   <br> 
+
+            <select name="tipo" required>
+                <option value="receita">Receita</option>
+                <option value="despesa">Despesa</option>
+            </select>
+            
+            <button type="submit">Adicionar Transação</button>
+        </form>
+
+        <h3>Suas Transações</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transacao in transacoes %}
+                    <tr>
+                        <td>{{ transacao.descricao }}</td>
+                        <td>R$ {{ transacao.valor }}</td>
+                        <td>{{ transacao.data.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ transacao.tipo }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">Nenhuma transação encontrada.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>

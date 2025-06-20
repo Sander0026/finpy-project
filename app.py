@@ -140,9 +140,72 @@ def dashboard():
     if 'usuario_id' not in session:
         flash('Você precisa estar logado para ver esta página.', 'warning')
         return redirect(url_for('login'))
+     
+    con = None
+    cursor = None
+    try:
+        con = create_db_connection()
+        cursor = con.cursor(dictionary=True)
+        query = "SELECT * FROM transacoes WHERE usuario_id = %s ORDER BY data DESC"
+        cursor.execute(query, (session['usuario_id'],)) 
         
-    return render_template('dashboard.html')
+        lista_transacoes = cursor.fetchall()
+        
+        if not lista_transacoes:
+            flash('Nenhuma transação encontrada. Adicione uma transação para começar.', 'info')
+            return render_template('dashboard.html', transacoes=[])
+        else:
+            return render_template('dashboard.html', transacoes=lista_transacoes)
+    except Error as e:
+        flash(f"Ocorreu um erro no sistema: {e}", 'danger')
+        return redirect(url_for('login'))       
+    
+    finally:
+        if cursor:
+            cursor.close()
+        if con and con.is_connected():
+            con.close()   
+    
+@app.route('/adicionar_transacao', methods=['POST'])
+def adicionar_transacao():
+    
+    usuario_id = session.get('usuario_id')
+    if not usuario_id:
+        flash('Você precisa estar logado para adicionar uma transação.', 'warning')
+        return redirect(url_for('login'))
+    
+    descricao = request.form.get('descricao')
+    valor = request.form.get('valor')
+    data = request.form.get('data')
+    tipo = request.form.get('tipo')
+    
+    
+    if not all([descricao, valor, data, tipo]):
+        flash('Todos os campos são obrigatórios.', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    con = None
+    cursor = None
+    try:
+        con = create_db_connection()
+        cursor = con.cursor()
+
+        query_insert = "INSERT INTO transacoes (usuario_id, descricao, valor, data, tipo) VALUES (%s, %s, %s, %s, %s)"
+        dados_transacao = (session['usuario_id'], descricao, valor, data, tipo)
+        cursor.execute(query_insert, dados_transacao)
+        con.commit()
+        flash('Transação adicionada com sucesso!', 'success')
+        return redirect(url_for('dashboard'))
+    
+    except Error as e:
+        flash(f"Ocorreu um erro no sistema: {e}", 'danger')
+        return redirect(url_for('dashboard'))
+    
+    finally:
+        if cursor:
+            cursor.close()
+        if con and con.is_connected():
+            con.close()   
 
 if __name__ == '__main__':
     app.run(debug=True)
-
