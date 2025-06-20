@@ -32,13 +32,29 @@
             <label for="data">Data:</label><br>
             <input type="date" name="data" required>   <br> 
 
+            <label for="tipo">Tipo:</label><br>
             <select name="tipo" required>
                 <option value="receita">Receita</option>
                 <option value="despesa">Despesa</option>
-            </select>
+            </select><br>
             
             <button type="submit">Adicionar Transação</button>
         </form>
+
+        <section class="resumo">
+            <div>
+                <h3>Total de Receitas:</h3>
+                <p class="valor-receita">R$ {{ "%.2f"|format(receitas|float) }}</p>
+            </div>
+            <div>
+                <h3>Total de Despesas:</h3>
+                <p class="valor-despesa">R$ {{ "%.2f"|format(despesas|float) }}</p>
+            </div>
+            <div>
+                <h3>Saldo Final:</h3>
+                <p class="valor-saldo">R$ {{ "%.2f"|format(saldo|float) }}</p>
+            </div>
+        </section>
 
         <h3>Suas Transações</h3>
         <table>
@@ -48,6 +64,7 @@
                     <th>Valor</th>
                     <th>Data</th>
                     <th>Tipo</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -57,6 +74,13 @@
                         <td>R$ {{ transacao.valor }}</td>
                         <td>{{ transacao.data.strftime('%d/%m/%Y') }}</td>
                         <td>{{ transacao.tipo }}</td>
+                        <td>
+                            <a href="{{ url_for('editar_transacao', transacao_id=transacao.id) }}">Editar</a>
+
+                            <form action="{{ url_for('deletar_transacao', transacao_id=transacao.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza?');">
+                                <button type="submit">Deletar</button>
+                            </form>
+                        </td>
                     </tr>
                 {% else %}
                     <tr>
