@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastro{% endblock %}
+
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h1 class="text-center mt-4">Criar Conta</h1>
+      <div class="card p-4 mt-3">
+        <form action="{{ url_for('auth.registrar_usuario') }}" method="POST">
+          <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="nome" name="nome" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">E-mail</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="senha" class="form-label">Senha</label>
+            <input type="password" class="form-control" id="senha" name="senha" required>
+          </div>
+          <div class="mb-3">
+            <label for="confirmarSenha" class="form-label">Confirme a Senha</label>
+            <input type="password" class="form-control" id="confirmarSenha" name="confirmar_senha" required>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+{% endblock %}
