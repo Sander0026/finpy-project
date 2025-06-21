@@ -19,5 +19,8 @@ def create_app():
 
     # Torna a rota 'index' do blueprint 'main' a rota principal
     app.add_url_rule('/', endpoint='index')
+    
+    from . import categories
+    app.register_blueprint(categories.bp)
  
     return app

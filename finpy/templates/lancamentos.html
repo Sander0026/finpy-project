@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Lançamentos{% endblock %}
+
+{%block content%}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="text-center mt-4">Dashboard de {{ session['usuario_nome'] }}</h1>
+            <div class="card p-4 mt-3">
+                <h3>Adicionar Nova Transação</h3>
+                <form action="{{ url_for('transactions.adicionar_transacao') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição</label>
+                        <input type="text" class="form-control" id="descricao" name="descricao" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="valor" class="form-label">Valor (R$)</label>
+                        <input type="number" class="form-control" id="valor" name="valor" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="data" class="form-label">Data</label>
+                        <input type="date" class="form-control" id="data" name="data" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipo" class="form-label">Tipo</label>
+                        <select class="form-select" id="tipo" name="tipo" required>
+                            <option value="receita">Receita</option>
+                            <option value="despesa">Despesa</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Adicionar Transação</button>
+                </form>
+                
+                <table class="table mt-4">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transacao in transacoes %}
+                        <tr>
+                            <td>{{ transacao.descricao }}</td>
+                            <td>R$ {{ transacao.valor }}</td>
+                            <td>{{ transacao.data.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ transacao.tipo }}</td>
+                            <td>
+                                <a href="{{ url_for('transactions.editar_transacao', transacao_id=transacao.id) }}">Editar</a>
+
+                                <form action="{{ url_for('transactions.deletar_transacao', transacao_id=transacao.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza?');">
+                                    <button type="submit">Deletar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4">Nenhuma transação encontrada.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>        
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

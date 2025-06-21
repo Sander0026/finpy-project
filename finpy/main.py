@@ -15,8 +15,6 @@ def index():
     else:
         # Se não estiver logado, redireciona para a página de login
         return redirect(url_for('auth.login'))
-
-
     
 @bp.route('/dashboard')
 def dashboard():
@@ -29,10 +27,6 @@ def dashboard():
     try:
         con = create_db_connection()
         cursor = con.cursor(dictionary=True)
-        query_usuarios = "SELECT * FROM transacoes WHERE usuario_id = %s ORDER BY data DESC"
-        cursor.execute(query_usuarios, (session['usuario_id'],)) 
-        
-        lista_transacoes = cursor.fetchall()
         
         query_total_receitas = "SELECT SUM(valor) AS total FROM transacoes WHERE tipo = 'receita' AND usuario_id = %s"
         cursor.execute(query_total_receitas, (session['usuario_id'],))
@@ -48,14 +42,7 @@ def dashboard():
         saldo = total_receita - total_despesa
         
         
-        
-        
-        if not lista_transacoes:
-            flash('Nenhuma transação encontrada. Adicione uma transação para começar.', 'info')
-            return render_template('dashboard.html', transacoes=[])
-        else:
-            return render_template('dashboard.html', 
-                       transacoes=lista_transacoes,
+        return render_template('dashboard.html', 
                        receitas=total_receita,
                        despesas=total_despesa,
                        saldo=saldo)

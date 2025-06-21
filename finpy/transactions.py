@@ -149,3 +149,30 @@ def atualizar_transacao(transacao_id):
             con.close()
 
     return redirect(url_for('main.dashboard'))
+
+@bp.route('/lancamentos')
+def lancamentos():
+    if 'usuario_id' not in session:
+        flash('Você precisa estar logado para ver esta página.', 'warning')
+        return redirect(url_for('auth.login'))
+     
+    con = None
+    cursor = None
+    try:
+        # A lógica para buscar as transações 
+        con = create_db_connection()
+        cursor = con.cursor(dictionary=True)
+        query = "SELECT * FROM transacoes WHERE usuario_id = %s ORDER BY data DESC"
+        cursor.execute(query, (session['usuario_id'],)) 
+        
+        lista_transacoes = cursor.fetchall()
+        
+        return render_template('lancamentos.html', transacoes=lista_transacoes)
+    except Error as e:
+        flash(f"Ocorreu um erro no sistema: {e}", 'danger')
+        return redirect(url_for('main.dashboard'))
+    finally:
+        if cursor:
+            cursor.close()
+        if con and con.is_connected():
+            con.close()
