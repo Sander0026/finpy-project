@@ -28,6 +28,23 @@
                             <option value="despesa">Despesa</option>
                         </select>
                     </div>
+
+                   
+                    <div class="mb-3">
+                        <label for="categoria">Categoria:</label><br>
+                        <select name="categoria_id" required>
+                            <optgroup label="Receitas">
+                                {% for categoria in categorias_receita %}
+                                    <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
+                                {% endfor %}
+                            </optgroup>
+                            <optgroup label="Despesas">
+                                {% for categoria in categorias_despesa %}
+                                    <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        </select>
+                    </div>
                     <button type="submit" class="btn btn-primary">Adicionar Transação</button>
                 </form>
                 

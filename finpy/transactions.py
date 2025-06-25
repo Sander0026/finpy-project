@@ -17,6 +17,7 @@ def adicionar_transacao():
     valor = request.form.get('valor')
     data = request.form.get('data')
     tipo = request.form.get('tipo')
+    categoria_id = request.form.get('categoria_id')
     
     
     if not all([descricao, valor, data, tipo]):
@@ -29,8 +30,8 @@ def adicionar_transacao():
         con = create_db_connection()
         cursor = con.cursor()
 
-        query_insert = "INSERT INTO transacoes (usuario_id, descricao, valor, data, tipo) VALUES (%s, %s, %s, %s, %s)"
-        dados_transacao = (session['usuario_id'], descricao, valor, data, tipo)
+        query_insert = "INSERT INTO transacoes (usuario_id, descricao, valor, data, tipo, categoria_id) VALUES (%s, %s, %s, %s, %s, %s)"
+        dados_transacao = (session['usuario_id'], descricao, valor, data, tipo, categoria_id)
         cursor.execute(query_insert, dados_transacao)
         con.commit()
         flash('Transação adicionada com sucesso!', 'success')
@@ -94,11 +95,15 @@ def editar_transacao(transacao_id):
         cursor.execute(query, (transacao_id,))
         transacao = cursor.fetchone()
         
+        query_categorias = "SELECT * FROM categorias WHERE usuario_id = %s"
+        cursor.execute(query_categorias, (session['usuario_id'],))
+        lista_categorias = cursor.fetchall()
+        
         if not transacao or transacao['usuario_id'] != session['usuario_id']:
             flash('Transação não encontrada ou você não tem permissão para editar.', 'danger')
             return redirect(url_for('main.dashboard'))
         
-        return render_template('editar_transacao.html', transacao=transacao)
+        return render_template('editar_transacao.html', transacao=transacao, categorias=lista_categorias)
     except Error as e:
         flash(f"Ocorreu um erro no sistema: {e}", 'danger')
         return redirect(url_for('main.dashboard'))
@@ -121,6 +126,7 @@ def atualizar_transacao(transacao_id):
     valor = request.form.get('valor')
     data = request.form.get('data')
     tipo = request.form.get('tipo')
+    categoria_id = request.form.get('categoria_id')
 
     con = None
     cursor = None
@@ -131,10 +137,10 @@ def atualizar_transacao(transacao_id):
         # Query SQL de UPDATE
         # A cláusula "AND usuario_id = %s" é uma camada extra de segurança
         query = """UPDATE transacoes 
-                   SET descricao = %s, valor = %s, data = %s, tipo = %s 
+                   SET descricao = %s, valor = %s, data = %s, tipo = %s , categoria_id = %s
                    WHERE id = %s AND usuario_id = %s"""
         
-        params = (descricao, valor, data, tipo, transacao_id, session['usuario_id'])
+        params = (descricao, valor, data, tipo, categoria_id, transacao_id, session['usuario_id'])
         cursor.execute(query, params)
         con.commit()
 
@@ -164,10 +170,26 @@ def lancamentos():
         cursor = con.cursor(dictionary=True)
         query = "SELECT * FROM transacoes WHERE usuario_id = %s ORDER BY data DESC"
         cursor.execute(query, (session['usuario_id'],)) 
-        
         lista_transacoes = cursor.fetchall()
         
-        return render_template('lancamentos.html', transacoes=lista_transacoes)
+        query_categorias = "SELECT * FROM categorias WHERE usuario_id = %s"
+        cursor.execute(query_categorias, (session['usuario_id'],))
+        lista_categorias = cursor.fetchall()
+        
+        categorias_receita = [] 
+        categorias_despesa = [] 
+        
+        for categoria in lista_categorias:
+            if categoria['tipo'] == 'receita':
+                # 4. Adicione à lista de receitas
+                categorias_receita.append(categoria)
+                
+            elif categoria['tipo'] == 'despesa':
+                # 4. Adicione à lista de despesas
+                categorias_despesa.append(categoria)
+        
+        
+        return render_template('lancamentos.html',transacoes=lista_transacoes, categorias_receita=categorias_receita, categorias_despesa=categorias_despesa)
     except Error as e:
         flash(f"Ocorreu um erro no sistema: {e}", 'danger')
         return redirect(url_for('main.dashboard'))

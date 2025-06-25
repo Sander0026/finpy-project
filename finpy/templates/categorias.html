@@ -1,6 +1,52 @@
 {% extends "base.html" %}
 {% block title %}Categorias{% endblock %}
+
 {% block content %}
-    <h1>Gerenciamento de Categorias</h1>
-    <p>Esta página está em construção. Em breve você poderá adicionar e gerenciar suas categorias aqui!</p>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form action="{{ url_for('categories.add') }}" method="POST">
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome da Nova Categoria</label>
+                <input type="text" class="form-control" id="nome" name="nome_categoria" required>
+            </div>
+            <div class="mb-3">
+                <label for="tipo" class="form-label">Tipo da Categoria</label>
+                <select class="form-select" id="tipo" name="tipo_categoria" required>
+                    <option value="" disabled selected>Selecione o tipo</option>
+                    <option value="receita">Receita</option>
+                    <option value="despesa">Despesa</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Adicionar Categoria</button>
+        </form>
+            <h2 class="mt-4">Categorias Existentes</h2>
+            <table class="table mt-3">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for categoria in categorias %}
+                        <tr>
+                            <td>{{ categoria.nome }}</td>
+                            <td>
+                                <a href="{{ url_for('categories.editar_categoria', categoria_id=categoria.id) }}">Editar</a>
+                                <form action="{{ url_for('categories.deletar_categoria', categoria_id=categoria.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="2" class="text-center">Nenhuma categoria encontrada.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div> 
+    </div> 
+</div>       
 {% endblock %}
