@@ -57,13 +57,12 @@ def registrar_usuario():
         flash(f"Ocorreu um erro no sistema: {e}", 'danger')  
     
     finally:
-    # Passo Bônus: Fechar tudo
         if cursor:
             cursor.close()
         if con and con.is_connected():
             con.close()  
     
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
 
 @bp.route('/login', methods=['GET'])
 def login():

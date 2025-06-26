@@ -116,7 +116,7 @@ def editar_transacao(transacao_id):
             flash('Transação não encontrada ou você não tem permissão para editar.', 'danger')
             return redirect(url_for('main.dashboard'))
         
-        return render_template('editar_transacao.html', transacao=transacao, categorias=lista_categorias)
+        return render_template('editar_transacao.html', transacao=transacao, categorias_receita=categorias_receita, categorias_despesa=categorias_despesa)
     except Error as e:
         flash(f"Ocorreu um erro no sistema: {e}", 'danger')
         return redirect(url_for('main.dashboard'))
