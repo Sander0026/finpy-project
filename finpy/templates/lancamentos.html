@@ -28,11 +28,10 @@
                             <option value="despesa">Despesa</option>
                         </select>
                     </div>
-
-                   
                     <div class="mb-3">
-                        <label for="categoria">Categoria:</label><br>
-                        <select name="categoria_id" required>
+                        <label for="categoria" class="form-label">Categoria</label>
+                        <select class="form-select" name="categoria_id" id="categoria" required>
+                            <option value="" disabled selected>Selecione uma categoria</option>
                             <optgroup label="Receitas">
                                 {% for categoria in categorias_receita %}
                                     <option value="{{ categoria.id }}">{{ categoria.nome }}</option>

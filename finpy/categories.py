@@ -54,6 +54,7 @@ def add():
         con = create_db_connection()
         cursor = con.cursor()
         
+        
         query = "INSERT INTO categorias (nome, tipo, usuario_id) VALUES (%s, %s, %s)"
         cursor.execute(query, (nome_categoria, tipo_categoria, session['usuario_id']))
         

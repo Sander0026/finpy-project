@@ -99,6 +99,19 @@ def editar_transacao(transacao_id):
         cursor.execute(query_categorias, (session['usuario_id'],))
         lista_categorias = cursor.fetchall()
         
+        categorias_receita = [] 
+        categorias_despesa = [] 
+        
+        for categoria in lista_categorias:
+            if categoria['tipo'] == 'receita':
+                # 4. Adicione à lista de receitas
+                categorias_receita.append(categoria)
+                
+            elif categoria['tipo'] == 'despesa':
+                # 4. Adicione à lista de despesas
+                categorias_despesa.append(categoria)
+        
+        
         if not transacao or transacao['usuario_id'] != session['usuario_id']:
             flash('Transação não encontrada ou você não tem permissão para editar.', 'danger')
             return redirect(url_for('main.dashboard'))
@@ -168,6 +181,7 @@ def lancamentos():
         # A lógica para buscar as transações 
         con = create_db_connection()
         cursor = con.cursor(dictionary=True)
+        
         query = "SELECT * FROM transacoes WHERE usuario_id = %s ORDER BY data DESC"
         cursor.execute(query, (session['usuario_id'],)) 
         lista_transacoes = cursor.fetchall()

@@ -27,6 +27,26 @@
                             <option value="despesa" {% if transacao.tipo == 'despesa' %}selected{% endif %}>Despesa</option>
                         </select>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoria</label>
+                        <select class="form-select" name="categoria_id" id="categoria" required>
+                            <optgroup label="Receitas">
+                                {% for categoria in categorias_receita %}
+                                    <option value="{{ categoria.id }}" {% if categoria.id == transacao.categoria_id %}selected{% endif %}>
+                                        {{ categoria.nome }}
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
+                            <optgroup label="Despesas">
+                                {% for categoria in categorias_despesa %}
+                                    <option value="{{ categoria.id }}" {% if categoria.id == transacao.categoria_id %}selected{% endif %}>
+                                        {{ categoria.nome }}
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
+                        </select>
+                    </div>
                     <button type="submit" class="btn btn-primary">Atualizar Transação</button>
                     <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Cancelar</a>
             
